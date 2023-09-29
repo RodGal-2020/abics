@@ -21,26 +21,25 @@ Install dependencies
 Below are the commands for installing dependencies in an anaconda based environment.
 
 ```sh
-conda install pyqt=5 
-conda install scipy
+conda install pyqt=5 scipy
 conda install -c jmcmurray json
-# Alternative as json is no longer available for Python 3.9
+# Alternative as `json` is no longer available for Python 3.9+
 conda install -c conda-forge diskcache pyqtgraph sqlitedict pyzmq
-```
-
-Some others for `abics`:
-
-```sh
-conda install pyqt5 lxml sip
+# In order to use the required `sip` module
+pip3 install lxml
+pip install pyqt6-sip
 ```
 
 Install/Link with opencmiss-zinc
 -------------
 
-Install opencmiss zinc library from pypi
+Install opencmiss zinc library from pypi is no longer available with `pip install opencmiss.zinc`, so we get it directly from source, for the version we are using of `Python`, in this case **3.10**.
 
 ```sh
-pip install opencmiss.zinc
+# pip install opencmiss.zinc
+# It is no longer available, so we get it from source for python 3.10:
+wget https://github.com/cmlibs/zinc/releases/download/v4.0.2/cmlibs.zinc-4.0.2-cp310-cp310-linux_x86_64.whl
+pip install cmlibs.zinc-4.0.2-cp310-cp310-linux_x86_64.whl
 ```
 
 Launching the tool
@@ -52,3 +51,10 @@ Launching the server
 --------------------
 
 The server can be launched using the script server.bat (.sh) on Windows(Linux). The default portno is 5570, to change the port number the script should be edited and the port number should be passed as on option "-p pornt_number".
+
+Saving the environment
+--------------------
+
+```sh
+conda env export > abics_env.yml
+```

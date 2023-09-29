@@ -35,7 +35,8 @@
   "2019"
  '''
 from __future__ import print_function, unicode_literals
-import sip
+from PyQt6 import sip
+# import sip # OLD
 
 #Ensure we use pyqt api 2 and consistency across python 2 and 3
 API_NAMES = ["QDate", "QDateTime", "QString", "QTextStream", "QTime", "QUrl", "QVariant"]
