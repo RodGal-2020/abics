@@ -35,7 +35,7 @@
   "2019"
  '''
 from __future__ import unicode_literals,print_function
-print("\033[1;33msupport.server.py: Detén la ejecución matando el proceso\033[1;0m")
+print("\033[1;33msupport.server.py: Detén la ejecución con Ctrl + C\033[1;0m")
 import signal
 import zmq
 from multiprocessing import Pool
@@ -95,13 +95,13 @@ def setup_interrupt_handling():
 def simulationTask(ident,simulator):
 
     def recordProgress(val):
-        print(ident,' progressed by ',val)
-        simulationprogress[ident]=val
+        print(ident,' progressed by ', val)
+        simulationprogress[ident] = val
         
     def recordResults(res):
         print(ident,' Completed')
         simulationresults[ident] = res
-        simulationprogress[ident]=1.0
+        simulationprogress[ident] = 1.0
             
     maxSteps = simulator.timeValues.shape[0]
     stepFactor = 100.0/float(maxSteps)
@@ -122,21 +122,22 @@ def simulationTask(ident,simulator):
         recordResults(res)
     except KeyboardInterrupt:
         sys.exit(0)
-        
+
 class ServerWorker(QtCore.QThread):
     """ServerWorker"""
-    def __init__(self, context,processes=4):
-        QtCore.QThread.__init__ (self)
+    def __init__(self, context, processes=4):
+        QtCore.QThread.__init__ (self) # Init de la clase madre
         self.context = context
-        self.pools = Pool(processes=processes)
+        self.pools = Pool(processes=processes) # Create a pool of worker processes using the multiprocessing.Pool class to perform concurrent tasks
 
     def run(self):
         print("\033[1;33msupport.server.py: Lanzando `run(self)` en ServerWorker ⚙️!\033[1;0m")
+        
         worker = self.context.socket(zmq.DEALER)
+        worker.setsockopt(zmq.IDENTITY, b"worker") # NOTE: Mine
         worker.connect('inproc://backend')
-        iteration_counter = 0
+        
         while True:
-            iteration_counter += 1
             try:
                 #######################################################
                 #######################################################
@@ -164,7 +165,6 @@ class ServerWorker(QtCore.QThread):
                 #######################################################
                 #######################################################
                 
-                # It's important to note that pickle.loads() is meant for deserializing Python objects that were serialized using the pickle.dump() method or a similar serialization process. The data you've shown does not look like valid pickled data.
                 print("Received ",ident,'\t',msg['comm'])
                 if msg['comm']=='start':
                     simulator = msg['simulationdef']
@@ -198,8 +198,7 @@ class ServerWorker(QtCore.QThread):
                     msg = pickle.dumps({'status':'failed','message':'command not supported'})
                     worker.send_multipart([ident, msg])
             except Exception as e:
-                print("iteration_counter =", iteration_counter)
-                print("\033[1;31msupport.server.py: Error encontrado! 💢: \n\t", e, "\033[1;0m")
+                print("\033[1;31msupport.server.py: Error encontrado! 💢: ", e, "\033[1;0m")
                 logging.error(ident)
                 import traceback
                 traceback.print_exc(file=sys.stdout)
@@ -216,13 +215,14 @@ class ServerWorker(QtCore.QThread):
 
 class Tanabe65MNServer(QtCore.QThread):
     """Server"""
-    def __init__(self,portno=5570,parent=None):
+    def __init__(self, portno=5570, parent=None):
         super(Tanabe65MNServer,self).__init__(parent)
         self.portno = portno
         
     def run(self):
         print("\033[1;33msupport.server.py: Lanzando `run(self)` en Tanabe65MNServer ⚙️!\033[1;0m")
-        context = zmq.Context()
+        context = zmq.Context() # ~ <zmq.sugar.context.Context object at 0x7f38c448b518>
+        
         frontend = context.socket(zmq.ROUTER)
         frontend.setsockopt(zmq.IDENTITY, b"frontend") # NOTE: Mine
         frontend.bind('tcp://*:%d'%self.portno)
@@ -233,22 +233,23 @@ class Tanabe65MNServer(QtCore.QThread):
         
         worker = ServerWorker(context)
         worker.start()
+        
         print("Server started. Listening to port %d"%self.portno)
         zmq.proxy(frontend, backend)
 
-        frontend.close()
-        backend.close()
-        context.term()
+        frontend.close() # Close the frontend socket/connection
+        backend.close() # Close the backend socket/connection
+        context.term() # Terminate the zmq context
 
 import sys
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Server for Thermoregulation solve')
     parser.add_argument('-p','--port', default=5570, help='Port for communication')
     args = vars(parser.parse_args())
-    print("\033[1;37msupport.server.py: args:", args, "\033[1;0m")
+    # print("\033[1;37msupport.server.py: args:", args, "\033[1;0m")
     
-    app = QtWidgets.QApplication(sys.argv)
-    setup_interrupt_handling() # setup the `Ctrl + C` key press handler
+    app = QtWidgets.QApplication(sys.argv) # Launch the app
+    setup_interrupt_handling() # Setup the `Ctrl + C` key press handler
     
     server = Tanabe65MNServer(portno=int(args['port']))
     server.start()
