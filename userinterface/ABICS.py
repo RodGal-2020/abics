@@ -35,8 +35,7 @@
   "2019"
  '''
 from __future__ import print_function, unicode_literals
-from PyQt6 import sip
-# import sip # OLD
+import sip
 
 #Ensure we use pyqt api 2 and consistency across python 2 and 3
 API_NAMES = ["QDate", "QDateTime", "QString", "QTextStream", "QTime", "QUrl", "QVariant"]
@@ -85,7 +84,7 @@ if __name__ == '__main__':
             QtWidgets.QMessageBox.critical(app, "Required module missing", "Python Package OpenCMISS Zinc release #3.3.0 or higher is required!! Install or contact your administrator")
             sys.exit(0)
         progressBar.setValue(1)
-        app.processEvents()                    
+        app.processEvents()             
         from PyQt5.QtCore import QT_VERSION_STR
         logging.info("pyqt5 version %s. Tested against (5.6.2)"%QT_VERSION_STR)
         progressBar.setValue(2)
@@ -95,10 +94,15 @@ if __name__ == '__main__':
         progressBar.setValue(3)
         app.processEvents()
         from diskcache.fanout import FanoutCache        
+        print("\033[1;33mABICS.py: Detector de problemas\033[1;0m")
         from userinterface.Simulator import WorkspaceWidget, SimulationMainWindow
+        print("\033[1;32mABICS.py: Problema 1 resuelto 😊!\033[1;0m")
     except ImportError as e:
+        print("\033[1;31mError final\033[1;0m:", e)
         QtWidgets.QMessageBox.critical(None, "Required module missing", "%s\n Install or contact your administrator"%e)
         sys.exit(0)
+    
+    print("\033[1;32mABICS.py: Problema general resuelto 😊!\033[1;0m")
     
     workspaceWidget = WorkspaceWidget()
     

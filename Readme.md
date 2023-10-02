@@ -20,6 +20,8 @@ Install dependencies
 
 Below are the commands for installing dependencies in an anaconda based environment.
 
+### ~~Python 3.10~~
+
 ```sh
 conda install pyqt=5 scipy
 conda install -c jmcmurray json
@@ -28,10 +30,14 @@ conda install -c conda-forge diskcache pyqtgraph sqlitedict pyzmq
 # In order to use the required `sip` module
 pip3 install lxml
 pip install pyqt6-sip
+# python -m pip install matplotlib==3.2
+sudo apt-get install python-dev 
+pip install wheel
+sudo apt-get install gcc
+sudo apt-get install python3-dev
+pip install matplotlib==3.3.4
+# This was the first matplotlib version that worked for me
 ```
-
-Install/Link with opencmiss-zinc
--------------
 
 Install opencmiss zinc library from pypi is no longer available with `pip install opencmiss.zinc`, so we get it directly from source, for the version we are using of `Python`, in this case **3.10**.
 
@@ -40,6 +46,31 @@ Install opencmiss zinc library from pypi is no longer available with `pip instal
 # It is no longer available, so we get it from source for python 3.10:
 wget https://github.com/cmlibs/zinc/releases/download/v4.0.2/cmlibs.zinc-4.0.2-cp310-cp310-linux_x86_64.whl
 pip install cmlibs.zinc-4.0.2-cp310-cp310-linux_x86_64.whl
+```
+
+### Python 3.6.8
+
+```sh
+conda install PyQt6 scipy 
+conda install -c jmcmurray json
+conda install -c conda-forge diskcache pyqtgraph sqlitedict pyzmq
+
+# pip install opencmiss.zinc # No longer available
+pip install wheel
+wget https://github.com/cmlibs/zinc/releases/download/v3.9.0/opencmiss.zinc-3.9.0-cp36-cp36m-linux_x86_64.whl
+pip install opencmiss.zinc-3.9.0-cp36-cp36m-linux_x86_64.whl
+```
+
+Now the advances steps:
+
+```sh
+wget https://distrib-coffee.ipsl.jussieu.fr/pub/linux/altlinux/p10/branch/x86_64/SRPMS.classic/libjpeg8-2.1.0-alt1.1.src.rpm
+sudo apt-get install alien
+sudo alien -d libjpeg8-2.1.0-alt1.1.src.rpm
+sudo useradd builder
+sudo dpkg -i libjpeg8_2.1.0-1_amd64.deb
+rm libjpeg*
+sudo apt-get install libjpeg8
 ```
 
 Launching the tool

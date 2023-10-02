@@ -45,6 +45,8 @@ for name in API_NAMES:
     sip.setapi(name, API_VERSION)
 
 from PyQt5.Qt import QColor
+
+# print("\033[1;31mError: RaditionFluxWizard.py\033[1;0m: from opencmiss.zinc.context import Context")
 from opencmiss.zinc.context import Context
 from zincwidgets.sceneviewerwidget import SceneviewerWidget
 import logging
@@ -54,6 +56,7 @@ import numpy as np
 import sys
 from PyQt5 import QtCore, QtGui, uic, QtWidgets
 import os, json
+
 
 class DummyCache(object):
     

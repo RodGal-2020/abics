@@ -42,11 +42,13 @@ API_VERSION = 2
 for name in API_NAMES:
     sip.setapi(name, API_VERSION)
 
-
 import logging
-from userinterface.RadiationFluxWizard import RadiationDefinitionWidget
+# print("\033[1;31mError userinterface/Simulator.py\033[1;0m: from userinterface.RadiationFluxWizard import RadiationDefinitionWidget")
+from userinterface.RadiationFluxWizard import RadiationDefinitionWidget # Error: libjpeg.so.8
 from userinterface.ClothingWizard import ClothingDefinitionWidget
+print("\033[1;33mSimulator.py: Detector de problemas 1\033[1;0m")
 from support.client import SimulationRemoteProcessManager, ListServerTasks
+print("\033[1;33mSimulator.py: Detector de problemas 2\033[1;0m")
 from PyQt5.QtCore import pyqtSignal
 from PyQt5 import QtCore, QtWidgets, uic
 from PyQt5.QtGui import QColor
@@ -70,6 +72,7 @@ from PyQt5.Qt import QApplication, QTimer, QColorDialog, QStyle, QMessageBox,\
 
 from CacheManagement import WorkspaceCache
 
+print("\033[1;32mSimulator.py: Simulator.py importado 😊!\033[1;0m")
 
 try:
     _encoding = QApplication.UnicodeUTF8
