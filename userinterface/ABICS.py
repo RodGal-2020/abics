@@ -94,9 +94,7 @@ if __name__ == '__main__':
         progressBar.setValue(3)
         app.processEvents()
         from diskcache.fanout import FanoutCache        
-        # print("\033[1;33mABICS.py: Detector de problemas\033[1;0m")
         from userinterface.Simulator import WorkspaceWidget, SimulationMainWindow
-        # print("\033[1;32mABICS.py: Problema 1 resuelto 😊!\033[1;0m")
     except ImportError as e:
         # print("\033[1;31mError final\033[1;0m:", e)
         QtWidgets.QMessageBox.critical(None, "Required module missing", "%s\n Install or contact your administrator"%e)
@@ -123,12 +121,14 @@ if __name__ == '__main__':
         mw.reconfigure(icmaDiskCache)
         splash.hide()
         mw.show()
-        
+    
+    
     progressBar.setValue(5)
     app.processEvents()            
     workspaceWidget.diskSpaceSelected.connect(createDiskCache)
     splash.hide()
     workspaceWidget.show()
 
+    print("\033[1;32mABICS.py: Hemos llegado al final del programa 🏳️!\033[1;0m")
+
     sys.exit(app.exec_())
-    

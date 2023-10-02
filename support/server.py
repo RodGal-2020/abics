@@ -35,6 +35,7 @@
   "2019"
  '''
 from __future__ import unicode_literals,print_function
+print("\033[1;33msupport.server.py: Detén la ejecución matando el proceso\033[1;0m")
 import signal
 import zmq
 from multiprocessing import Pool
@@ -44,25 +45,24 @@ import logging
 import pickle
 import argparse
 
+### DEBUGGING
+# import re
+# pattern = re.compile("\\r\\n")
+def print_list(list, level = 1):
+    # Repeat "\t" * level
+    level_string = "\t" * level
+    print("=====================================================================================================")
+    print("\033[1;9", level, "m", level_string, "· len(l) = ", len(list), "\033[1;0m", sep = "")
+    print("-----------------------------------------------------------------------------------------------------")
+    for i in range(list.__len__()):
+        print("\033[1;9", level, "m", level_string, "· l[", i, "] = ", list[i], "\033[1;0m", sep = "")
+    print("=====================================================================================================")
+### FIN DEBUGGING
+# print("\033[1;32msupport.server.py: Todo importado 😊!\033[1;0m")
+
 #Use a file based dict as we are dealing across processes
 simulationresults = sqlitedict.SqliteDict('thermoregulationResults.sqlite', autocommit=True)
 simulationprogress = sqlitedict.SqliteDict('thermoregulationProgress.sqlite', autocommit=True)
-
-#Call this function in your main after creating the QApplication
-def setup_interrupt_handling():
-    """Setup handling of KeyboardInterrupt (Ctrl-C) for PyQt."""
-    signal.signal(signal.SIGINT, _interrupt_handler)
-    # Regularly run some (any) python code, so the signal handler gets a
-    # chance to be executed:
-    safe_timer(50, lambda: None)
-
-
-# Define this as a global function to make sure it is not garbage
-# collected when going out of scope:
-def _interrupt_handler(signum, frame):
-    """Handle KeyboardInterrupt: quit application."""
-    QtWidgets.QApplication.quit()
-
 
 def safe_timer(timeout, func, *args, **kwargs):
     """
@@ -76,7 +76,21 @@ def safe_timer(timeout, func, *args, **kwargs):
             QtCore.QTimer.singleShot(timeout, timer_event)
     QtCore.QTimer.singleShot(timeout, timer_event)
 
+# # Define this as a global function to make sure it is not garbage
+# # collected when going out of scope:
+# def _interrupt_handler(signum, frame):
+#     """Handle KeyboardInterrupt: quit application."""
+#     QtWidgets.QApplication.quit() # NOTE: Original
+#     sys.exit(0) # Exit the program
 
+#Call this function in your main after creating the QApplication
+def setup_interrupt_handling():
+    """Setup handling of KeyboardInterrupt (Ctrl-C) for PyQt."""
+    signal.signal(signal.SIGINT, signal.SIG_DFL) # NOTE: Debug, as it didn't stop before
+    # signal.signal(signal.SIGINT, _interrupt_handler) # Launch when signal.SIGINT (Ctrl + C) is received
+    # Regularly run some (any) python code, so the signal handler gets a
+    # chance to be executed:
+    safe_timer(50, lambda: None) # 50 ms
 
 def simulationTask(ident,simulator):
 
@@ -117,12 +131,40 @@ class ServerWorker(QtCore.QThread):
         self.pools = Pool(processes=processes)
 
     def run(self):
+        print("\033[1;33msupport.server.py: Lanzando `run(self)` en ServerWorker ⚙️!\033[1;0m")
         worker = self.context.socket(zmq.DEALER)
         worker.connect('inproc://backend')
+        iteration_counter = 0
         while True:
+            iteration_counter += 1
             try:
-                ident, msx = worker.recv_multipart()
-                msg = pickle.loads(msx)
+                #######################################################
+                #######################################################
+                #######################################################
+                ################## DEBUGGING 
+                # Now we print the elements of worker.recv_multipart() in a beatufiul, tabular format:
+                # print_list(worker.recv_multipart())
+                # print("🤓", b''.join(worker.recv_multipart()).decode('utf-8'))
+                # ident, msx = worker.recv_multipart() # NOTE: Original
+                ident = worker.recv_multipart()[0]
+                msx = worker.recv_multipart()[1:]
+                
+                print("\033[1;95m\t· ident.decode('utf-8') = ", ident.decode('utf-8'), "\033[1;0m")
+                print_list(msx, level = 2)
+                
+                # print("\033[1;95m\t· msx = ", msx, "\033[1;0m")
+                # print("\033[1;95m\t· msx.decode('utf-8') = ", msx.decode('utf-8'), "\033[1;0m")
+                
+                # msg = pattern.split(msx.decode("utf-8"))
+                # msg = pickle.loads(msx) # NOTE: Original
+                msg = b''.join(msx) # FIXME: Esto sigue sin funcionar
+                print("\033[1;95\t· msg = ", msg, "\033[1;0m")
+                ################## FIN DEBUGGING 
+                #######################################################
+                #######################################################
+                #######################################################
+                
+                # It's important to note that pickle.loads() is meant for deserializing Python objects that were serialized using the pickle.dump() method or a similar serialization process. The data you've shown does not look like valid pickled data.
                 print("Received ",ident,'\t',msg['comm'])
                 if msg['comm']=='start':
                     simulator = msg['simulationdef']
@@ -156,6 +198,8 @@ class ServerWorker(QtCore.QThread):
                     msg = pickle.dumps({'status':'failed','message':'command not supported'})
                     worker.send_multipart([ident, msg])
             except Exception as e:
+                print("iteration_counter =", iteration_counter)
+                print("\033[1;31msupport.server.py: Error encontrado! 💢: \n\t", e, "\033[1;0m")
                 logging.error(ident)
                 import traceback
                 traceback.print_exc(file=sys.stdout)
@@ -177,11 +221,14 @@ class Tanabe65MNServer(QtCore.QThread):
         self.portno = portno
         
     def run(self):
+        print("\033[1;33msupport.server.py: Lanzando `run(self)` en Tanabe65MNServer ⚙️!\033[1;0m")
         context = zmq.Context()
         frontend = context.socket(zmq.ROUTER)
+        frontend.setsockopt(zmq.IDENTITY, b"frontend") # NOTE: Mine
         frontend.bind('tcp://*:%d'%self.portno)
 
         backend = context.socket(zmq.DEALER)
+        backend.setsockopt(zmq.IDENTITY, b"backend") # NOTE: Mine
         backend.bind('inproc://backend')
         
         worker = ServerWorker(context)
@@ -198,8 +245,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Server for Thermoregulation solve')
     parser.add_argument('-p','--port', default=5570, help='Port for communication')
     args = vars(parser.parse_args())
+    print("\033[1;37msupport.server.py: args:", args, "\033[1;0m")
+    
     app = QtWidgets.QApplication(sys.argv)
-    setup_interrupt_handling()
+    setup_interrupt_handling() # setup the `Ctrl + C` key press handler
+    
     server = Tanabe65MNServer(portno=int(args['port']))
     server.start()
     server.wait()
