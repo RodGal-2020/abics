@@ -35,13 +35,21 @@
   "2019"
  '''
 from __future__ import unicode_literals,print_function
+# print("\033[1;33msupport.client.py: Detector de problemas 1\033[1;0m")
 import sip
+# print("\033[1;33msupport.client.py: Detector de problemas 2\033[1;0m")
 import zmq
+# print("\033[1;33msupport.client.py: Detector de problemas 3\033[1;0m")
 import uuid
+# print("\033[1;33msupport.client.py: Detector de problemas 4\033[1;0m")
 import pickle
+# print("\033[1;33msupport.client.py: Detector de problemas 5\033[1;0m")
 from support.Simulations import Simulator
+# print("\033[1;33msupport.client.py: Detector de problemas 6\033[1;0m")
 from PyQt5 import QtWidgets
 from userinterface.CacheManagement import WorkspaceCache
+
+# print("\033[1;32msupport.client.py importado 😊!\033[1;0m")
 
 API_NAMES = ["QDate", "QDateTime", "QString", "QTextStream", "QTime", "QUrl", "QVariant"]
 API_VERSION = 2

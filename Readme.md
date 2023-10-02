@@ -71,6 +71,7 @@ sudo useradd builder
 sudo dpkg -i libjpeg8_2.1.0-1_amd64.deb
 rm libjpeg*
 sudo apt-get install libjpeg8
+pip install scipy
 ```
 
 Launching the tool

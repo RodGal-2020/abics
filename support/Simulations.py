@@ -36,6 +36,7 @@
  '''
  
 from __future__ import unicode_literals,print_function
+# print("\033[1;33msupport.Simulations.py: Detector de problemas 1\033[1;0m")
 import sip
 API_NAMES = ["QDate", "QDateTime", "QString", "QTextStream", "QTime", "QUrl", "QVariant"]
 API_VERSION = 2
@@ -48,10 +49,13 @@ from PyQt5 import QtCore
 from PyQt5.Qt import pyqtSignal
 import numpy as np
 import os
+# print("\033[1;33msupport.Simulations.py: Detector de problemas 7\033[1;0m")
 from thermoregulation.Tanabe65MN import Tanabe65MNProjectedToStandard16,\
     Tanabe65MNModel
+# print("\033[1;33msupport.Simulations.py: Detector de problemas 8\033[1;0m")
 from support.Interfaces import ClothingResistanceModel, RadiationModel
 
+# print("\033[1;32msupport.Simulations.py importado 😊!\033[1;0m")
 
 class SimulationData(object):
     

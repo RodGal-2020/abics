@@ -59,5 +59,8 @@ dependencies:
   - zeromq=4.3.4=h9c3ff4c_1
   - zlib=1.2.13=hd590300_5
   - pip:
+      - olefile==0.46
       - opencmiss-zinc==3.9.0
+      - pillow==8.4.0
+      - scipy==1.5.4
 prefix: /home/xopre/anaconda3/envs/abics3.6

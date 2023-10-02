@@ -46,7 +46,7 @@ for name in API_NAMES:
 
 from PyQt5.Qt import QColor
 
-# print("\033[1;31mError: RaditionFluxWizard.py\033[1;0m: from opencmiss.zinc.context import Context")
+# # print("\033[1;31mError: RaditionFluxWizard.py\033[1;0m: from opencmiss.zinc.context import Context")
 from opencmiss.zinc.context import Context
 from zincwidgets.sceneviewerwidget import SceneviewerWidget
 import logging
