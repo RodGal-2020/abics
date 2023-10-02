@@ -158,14 +158,14 @@ class ServerWorker(QtCore.QThread):
                 
                 # msg = pattern.split(msx.decode("utf-8"))
                 # msg = pickle.loads(msx) # NOTE: Original
-                msg = b''.join(msx) # FIXME: Esto sigue sin funcionar
+                msg = b''.join(msx) # FIXME: Es difícil saber si esto funciona
                 print("\033[1;95\t· msg = ", msg, "\033[1;0m")
                 ################## FIN DEBUGGING 
                 #######################################################
                 #######################################################
                 #######################################################
                 
-                print("Received ",ident,'\t',msg['comm'])
+                print("Received ", ident, '\t', msg['comm'])
                 if msg['comm']=='start':
                     simulator = msg['simulationdef']
                     self.pools.apply_async(simulationTask,(ident, simulator))
